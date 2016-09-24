@@ -65,10 +65,24 @@ def get_iso_file(revision, dir):
     compressed_iso_path = dir + '/' + compressed_iso_filename
     iso_download_url = 'http://iso.reactos.org/bootcd/' \
         + compressed_iso_filename
-    if os.path.isfile(iso_path):
-        print('File', iso_path, 'already exists')
-    else:
-        if not os.path.isfile(compressed_iso_path):
+    iso_file_already_exist= os.path.isfile(iso_path)
+    if iso_file_already_exist:
+            print('File', iso_path, 'already exists')
+            if os.path.getsize(iso_path)==0:
+                print('File', iso_path, 'has zero size. Deleting!')
+                os.remove(iso_path)
+                iso_file_already_exist=False
+                 
+    if not(iso_file_already_exist):
+        compressed_iso_file_already_exist=os.path.isfile(compressed_iso_path)
+        if compressed_iso_file_already_exist:
+            print('File', compressed_iso_path, 'already exists')
+            if os.path.getsize(compressed_iso_path)==0:
+                print('File', compressed_iso_path, 'has zero size. Deleting!')
+                os.remove(compressed_iso_path)
+                compressed_iso_file_already_exist=False
+                
+        if not(compressed_iso_file_already_exist):
             print('Dowloading file ', compressed_iso_path,
                   ' already exists')
             try:
