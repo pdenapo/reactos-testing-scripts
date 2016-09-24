@@ -121,7 +121,7 @@ def create_virtual_machine(revision):
     machine_path = vm_dir + '/' + machine_name
     print('machine_path', machine_path)
     virtual_disk_path = machine_path + '/' + 'disk.vdi'
-    create_virtual_disk(virtual_disk_path, 6000)
+    create_virtual_disk(virtual_disk_path, config['disk_size'])
     try:
         vm = vbox.create_machine('', machine_name, [''], 'WindowsXP', ''
                                  )
@@ -143,7 +143,7 @@ def create_virtual_machine(revision):
     vm.lock_machine(session, vbl.LockType.write)
     mutable = session.machine
     mutable.add_storage_controller('IDE', vbl.StorageBus.ide)
-    mutable.memory_size = 5000
+    mutable.memory_size = config['memory_size']
     mutable.attach_device('IDE', 0, 0, device_type, medium)
     mutable.attach_device('IDE', 0, 1, device_type2, medium2)
     mutable.save_settings()

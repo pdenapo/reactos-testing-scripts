@@ -1,3 +1,5 @@
 {
-    "iso_images_dir": "/home/pablo/reactos-work/iso_images"
+    "iso_images_dir": "/home/pablo/reactos-work/iso_images",
+    "memory_size": 6000,
+    "disk_size": 5000
 }
