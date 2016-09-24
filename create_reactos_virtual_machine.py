@@ -178,8 +178,8 @@ if __name__ == '__main__':
     parser.add_argument('--config', dest='config_file_name',
                         help='configuration file to read', default='config.json'
                         )
-    parser.add_argument('--iso-path', dest='iso_path',
-                        help='iso-file for the CD-Rom of the virtual machine'
+    parser.add_argument('--iso-image', dest='iso_image',
+                        help='iso-image for the CD-Rom of the virtual machine'
                         )                    
                     
     args = parser.parse_args()
@@ -195,8 +195,8 @@ if __name__ == '__main__':
     revision = args.revision
     if revision==None:
         revision='Unknown'
-    if args.iso_path:
-        iso_path=args.iso_path
+    if args.iso_image:
+        iso_path=args.iso_image
     else:    
         if revision == None:
             revision = get_current_revision()
