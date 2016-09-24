@@ -120,12 +120,9 @@ def create_virtual_disk(path, size):
         ])
 
 
-def create_virtual_machine(revision):
+def create_virtual_machine(revision,iso_image):
 # Creates the virtual machine for a given revision.
-    global config
-    print('Creating a virtual machine for revision', revision)
-    dir = config['iso_images_dir']
-    iso_path = get_iso_file(revision, dir)
+    
     vbox = virtualbox.VirtualBox()
     session = virtualbox.Session()
     vm_dir = \
@@ -180,6 +177,9 @@ if __name__ == '__main__':
                         )
     parser.add_argument('--config', dest='config_file_name',
                         help='configuration file to read', default='config.json'
+                        )
+    parser.add_argument('--iso-path', dest='iso_path',
+                        help='iso-file for the CD-Rom of the virtual machine'
                         )                    
                     
     args = parser.parse_args()
@@ -191,9 +191,18 @@ if __name__ == '__main__':
     else:
         print('Configuration file',args.config_file_name,' does not exist.')
         sys.exit(3)
-
+  
     revision = args.revision
-    if revision == None:
-        revision = get_current_revision()
-    create_virtual_machine(revision)
+    if revision==None:
+        revision='Unknown'
+    if args.iso_path:
+        iso_path=args.iso_path
+    else:    
+        if revision == None:
+            revision = get_current_revision()
+        print('Creating a virtual machine for revision', revision)
+        dir = config['iso_images_dir']
+        iso_path = get_iso_file(revision, dir)
+    
+    create_virtual_machine(revision,iso_path)
 
