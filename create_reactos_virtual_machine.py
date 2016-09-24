@@ -141,7 +141,7 @@ def create_virtual_machine(revision):
                                  )
     except vbl.VBoxErrorFileError:
         print('Virtual machine', machine_name, 'already exists !')
-        sys.exit(1)
+        sys.exit(2)
     vbox.register_machine(vm)
     vm = vbox.find_machine(machine_name)
     device_type = vbl.DeviceType.hard_disk
@@ -167,11 +167,7 @@ def create_virtual_machine(revision):
 
 if __name__ == '__main__':
 
-    # We use a configuration file with json format for several configuration parameters.
-
-    config = json.load(open('config.json'))
-
-    # Now we parse the command-line arguments
+    # We parse the command-line arguments
 
     parser = \
         argparse.ArgumentParser(description='Create a VirtualBox virtual machine for a given revision of React-OS.'
@@ -179,7 +175,19 @@ if __name__ == '__main__':
     parser.add_argument('--revision', dest='revision',
                         help='for which revision? [default=current revision]'
                         )
+    parser.add_argument('--config', dest='config_file_name',
+                        help='configuration file to read', default='config.json'
+                        )                    
+                    
     args = parser.parse_args()
+    
+    # We use a configuration file with json format for several configuration parameters.
+
+    if os.path.isfile(args.config_file_name):
+        config = json.load(open(args.config_file_name))
+    else:
+        print('Configuration file',args.config_file_name,' does not exist.')
+        sys.exit(3)
 
     revision = args.revision
     if revision == None:
