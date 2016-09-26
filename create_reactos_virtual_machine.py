@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Script to create a virtual machine for React OS under VirtualBox
@@ -31,8 +31,7 @@ import argparse
 
 
 def get_svn_info_xml_file():
-
-# This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory.
+    """This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory."""
 
     svn_info_xml_file = open('svn_info.xml', 'w')
     print('Running svn info for getting the current React OS version')
@@ -43,8 +42,7 @@ def get_svn_info_xml_file():
 
 
 def get_current_revision():
-
-# This function gets the current revision number from the React OS subversion repository.
+    """This function gets the current revision number from the React OS subversion repository."""
 
     get_svn_info_xml_file()
     tree = etree.parse('svn_info.xml')
@@ -55,9 +53,10 @@ def get_current_revision():
 
 
 def get_iso_file(revision, dir):
-
-# This function gets the compressed iso image corresponding to a given revision from the official ReactOS build bot (using wget),
-# to a given directory and uncompress it using 7z.
+    """
+     This function gets the compressed iso image corresponding to a given revision from the official ReactOS build bot (using wget),
+     to a given directory and uncompress it using 7z.
+    """
 
     iso_filename = 'bootcd-' + revision + '-dbg.iso'
     iso_path = dir + '/' + iso_filename
@@ -65,31 +64,34 @@ def get_iso_file(revision, dir):
     compressed_iso_path = dir + '/' + compressed_iso_filename
     iso_download_url = 'http://iso.reactos.org/bootcd/' \
         + compressed_iso_filename
-    iso_file_already_exists= os.path.isfile(iso_path)
+    iso_file_already_exists = os.path.isfile(iso_path)
     if iso_file_already_exists:
-            print('File', iso_path, 'already exists')
-            if os.path.getsize(iso_path)==0:
-                print('File', iso_path, 'has zero size. Deleting!')
-                os.remove(iso_path)
-                iso_file_already_exists=False
-                 
-    if not(iso_file_already_exists):
-        compressed_iso_file_already_exists=os.path.isfile(compressed_iso_path)
+        print('File', iso_path, 'already exists')
+        if os.path.getsize(iso_path) == 0:
+            print('File', iso_path, 'has zero size. Deleting!')
+            os.remove(iso_path)
+            iso_file_already_exists = False
+
+    if not iso_file_already_exists:
+        compressed_iso_file_already_exists = \
+            os.path.isfile(compressed_iso_path)
         if compressed_iso_file_already_exists:
             print('File', compressed_iso_path, 'already exists')
-            if os.path.getsize(compressed_iso_path)==0:
-                print('File', compressed_iso_path, 'has zero size. Deleting!')
+            if os.path.getsize(compressed_iso_path) == 0:
+                print('File', compressed_iso_path,
+                      'has zero size. Deleting!')
                 os.remove(compressed_iso_path)
-                compressed_iso_file_already_exists=False
-                
-        if not(compressed_iso_file_already_exists):
+                compressed_iso_file_already_exists = False
+
+        if not compressed_iso_file_already_exists:
             print('Compressed iso file ', compressed_iso_path,
                   ' already exists')
             try:
                 subprocess.check_call(['wget', '--output-document='
                         + compressed_iso_path, iso_download_url])
             except subprocess.CalledProcessError:
-                print('Downloading compressed iso file for revision '+ revision+' failed.')
+                print('Downloading compressed iso file for revision '
+                      + revision + ' failed.')
                 sys.exit(1)
         print('Decompressing iso file')
         try:
@@ -103,8 +105,7 @@ def get_iso_file(revision, dir):
 
 
 def create_virtual_disk(path, size):
-
-  # This function creates a virtual disk of a given size using VBoxManage
+    """ This function creates a virtual disk of a given size using VBoxManage """
 
     print('Creating a virtual disk at', path)
     subprocess.call([
@@ -120,9 +121,9 @@ def create_virtual_disk(path, size):
         ])
 
 
-def create_virtual_machine(revision,iso_image):
-# Creates the virtual machine for a given revision.
-    
+def create_virtual_machine(revision, iso_image):
+    """Creates the virtual machine for a given revision."""
+
     vbox = virtualbox.VirtualBox()
     session = virtualbox.Session()
     vm_dir = \
@@ -176,33 +177,34 @@ if __name__ == '__main__':
                         help='for which revision? [default=current revision]'
                         )
     parser.add_argument('--config', dest='config_file_name',
-                        help='configuration file to read', default='config.json'
-                        )
+                        help='configuration file to read',
+                        default='config.json')
     parser.add_argument('--iso-image', dest='iso_image',
                         help='iso-image for the CD-Rom of the virtual machine'
-                        )                    
-                    
+                        )
+
     args = parser.parse_args()
-    
+
     # We use a configuration file with json format for several configuration parameters.
 
     if os.path.isfile(args.config_file_name):
         config = json.load(open(args.config_file_name))
     else:
-        print('Configuration file',args.config_file_name,' does not exist.')
+        print('Configuration file', args.config_file_name,
+              ' does not exist.')
         sys.exit(3)
-  
+
     revision = args.revision
-    if revision==None:
-        revision='Unknown'
+    if revision == None:
+        revision = 'Unknown'
     if args.iso_image:
-        iso_path=args.iso_image
-    else:    
+        iso_path = args.iso_image
+    else:
         if revision == None:
             revision = get_current_revision()
         print('Creating a virtual machine for revision', revision)
         dir = config['iso_images_dir']
         iso_path = get_iso_file(revision, dir)
-    
-    create_virtual_machine(revision,iso_path)
+
+    create_virtual_machine(revision, iso_path)
 
