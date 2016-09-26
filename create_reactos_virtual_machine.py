@@ -76,7 +76,8 @@ def get_iso_file(revision, dir):
         compressed_iso_file_already_exists = \
             os.path.isfile(compressed_iso_path)
         if compressed_iso_file_already_exists:
-            print('File', compressed_iso_path, 'already exists')
+            print('Compressed iso file', compressed_iso_path,
+                  'already exists')
             if os.path.getsize(compressed_iso_path) == 0:
                 print('File', compressed_iso_path,
                       'has zero size. Deleting!')
@@ -84,8 +85,8 @@ def get_iso_file(revision, dir):
                 compressed_iso_file_already_exists = False
 
         if not compressed_iso_file_already_exists:
-            print('Compressed iso file ', compressed_iso_path,
-                  ' already exists')
+            print('Downloading compressed iso file ',
+                  compressed_iso_path)
             try:
                 subprocess.check_call(['wget', '--output-document='
                         + compressed_iso_path, iso_download_url])
@@ -195,10 +196,11 @@ if __name__ == '__main__':
         sys.exit(3)
 
     revision = args.revision
-    if revision == None:
-        revision = 'Unknown'
+
     if args.iso_image:
         iso_path = args.iso_image
+        if revision == None:
+            revision = 'Unknown'
     else:
         if revision == None:
             revision = get_current_revision()
