@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Script to checkout the React OS sources
@@ -22,40 +22,78 @@
 from __future__ import print_function
 import subprocess
 import argparse
+import os
+import json
+import sys
+import xml.etree.ElementTree as etree
+
 
 def checkout_reactos_trunk(revision):
-    """ This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory."""
+    """ This function runs the "svn ckeckout" command to get the React OS sources """
 
     global config
-    print('Running svn checkout for revision',revision,'into',config["reactos_src_dir"])
-    subprocess.call(['svn', 'checkout','--revision',revision, 'svn://svn.reactos.org/reactos/trunk/reactos',config["reactos_src_dir"]])
-    
+    dir = config['reactos_src_dir'] + '/r' + revision
+    print('Running svn checkout for revision', revision, 'into', dir)
+    subprocess.call([
+        'svn',
+        'checkout',
+        '--revision',
+        revision,
+        'svn://svn.reactos.org/reactos/trunk/reactos',
+        dir,
+        ])
+
+
+def get_svn_info_xml_file():
+    """ This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory. """
+
+    svn_info_xml_file = open('svn_info.xml', 'w')
+    print('Running svn info for getting the current React OS version')
+    subprocess.call(['svn', 'info', '--xml',
+                    'svn://svn.reactos.org/reactos'],
+                    stdout=svn_info_xml_file)
+    svn_info_xml_file.close()
+
+
+def get_current_revision():
+    """ This function gets the current revision number from the React OS subversion repository."""
+
+    get_svn_info_xml_file()
+    tree = etree.parse('svn_info.xml')
+    root = tree.getroot()
+    entry = root.find('entry')
+    revision = entry.get('revision')
+    return revision
+
 
 if __name__ == '__main__':
 
     # We parse the command-line arguments
 
     parser = \
-        argparse.ArgumentParser(description='Create a VirtualBox virtual machine for a given revision of React-OS.'
+        argparse.ArgumentParser(description='Checkout the ReactOS sources.'
                                 )
     parser.add_argument('--revision', dest='revision',
-                        help='for which revision? [default=current revision]',
-                        default='HEAD'
+                        help='for which revision? [default=current revision]'
                         )
     parser.add_argument('--config', dest='config_file_name',
-                        help='configuration file to read', default='config.json'
-                        )
+                        help='configuration file to read',
+                        default='config.json')
 
     args = parser.parse_args()
-    
+
     # We use a configuration file with json format for several configuration parameters.
 
     if os.path.isfile(args.config_file_name):
         config = json.load(open(args.config_file_name))
     else:
-        print('Configuration file',args.config_file_name,' does not exist.')
+        print('Configuration file', args.config_file_name,
+              ' does not exist.')
         sys.exit(3)
-  
+
     revision = args.revision
-     
+
+    if revision == None:
+        revision = get_current_revision()
+
     checkout_reactos_trunk(revision)
