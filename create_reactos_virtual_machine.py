@@ -146,16 +146,25 @@ def create_virtual_machine(revision, iso_image):
         sys.exit(2)
     vbox.register_machine(vm)
     vm = vbox.find_machine(machine_name)
+
+    # We create the hard disk device
+
+    print('Adding a virtual hard-disk at', virtual_disk_path)
     device_type = vbl.DeviceType.hard_disk
     access_mode = vbl.AccessMode.read_write
     force_new_uuid = False
     medium = vbox.open_medium(virtual_disk_path, device_type,
                               access_mode, force_new_uuid)
+
+    # We create the CD ROM
+
+    print('Adding CDROM with iso image file', iso_path)
     device_type2 = vbl.DeviceType.dvd
     access_mode2 = vbl.AccessMode.read_only
     force_new_uuid2 = True
     medium2 = vbox.open_medium(iso_path, device_type2, access_mode2,
                                force_new_uuid2)
+
     vm.lock_machine(session, vbl.LockType.write)
     mutable = session.machine
     mutable.add_storage_controller('IDE', vbl.StorageBus.ide)
@@ -198,7 +207,11 @@ if __name__ == '__main__':
     revision = args.revision
 
     if args.iso_image:
-        iso_path = args.iso_image
+        iso_path = os.path.abspath(args.iso_image)
+        if not os.path.isfile(iso_path):
+            print('Error:Iso image file', iso_path, 'does not exists.')
+            sys.exit(4)
+
         if revision == None:
             revision = 'Unknown'
     else:
