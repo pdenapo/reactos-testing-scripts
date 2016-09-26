@@ -27,7 +27,7 @@ def checkout_reactos_trunk(revision):
     """ This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory."""
 
     global config
-    print('Running svn checkout for getting the current React OS version')
+    print('Running svn checkout for revision',revision,'into',config["reactos_src_dir"])
     subprocess.call(['svn', 'checkout','--revision',revision, 'svn://svn.reactos.org/reactos/trunk/reactos',config["reactos_src_dir"]])
     
 
