@@ -28,33 +28,6 @@ import json
 import sys
 import xml.etree.ElementTree as etree
 
-
-def svn_checkout_reactos_trunk(revision,src_dir):
-    """ This function runs the "svn ckeckout" command to get the React OS sources """
-
-    print('Running svn checkout for revision', revision, 'into', src_dir)
-    subprocess.call([
-        'svn',
-        'checkout',
-        '--revision',
-        revision,
-        'svn://svn.reactos.org/reactos/trunk/reactos',
-        src_dir,
-        ])
-
-def svn_update_reactos_trunk(revision,src_dir):
-    """ This function runs the "svn update" to update the React OS sources to a given revision """
-
-    print('Running svn update for revision', revision, 'into', src_dir)
-    subprocess.call([
-        'svn',
-        'upate',
-        '--revision',
-        revision,
-        src_dir,
-        ])
-
-
 def get_svn_info_xml_file():
     """ This function runs the "svn info" command on the React OS subversion repository, with outpoot in xml format in the file svn_info.xml in the current directory. """
 
@@ -77,6 +50,43 @@ def get_current_revision():
     return revision
 
 
+def svn_checkout_reactos_trunk(revision,src_dir):
+    """ This function runs the "svn ckeckout" command to get the React OS sources """
+
+    print('Running svn checkout for revision', revision, 'into', src_dir)
+    subprocess.call([
+        'svn',
+        'checkout',
+        '--revision',
+        revision,
+        'svn://svn.reactos.org/reactos/trunk',
+        src_dir,
+        ])
+
+def svn_update_reactos_trunk(revision,src_dir):
+    """ This function runs the "svn update" to update the React OS sources to a given revision """
+
+    print('Running svn update for revision', revision, 'into', src_dir)
+    subprocess.call([
+        'svn',
+        'upate',
+        '--revision',
+        revision,
+        src_dir,
+        ])
+
+def check_if_inside_RosBE():
+    try:
+        output = subprocess.check_output(['version'])
+    except OSError:
+        print('Error running the version command.')
+        return False
+    print(output)
+    if output.find('ReactOS'):
+        return True
+    else:
+        return False
+
 if __name__ == '__main__':
 
     # We parse the command-line arguments
@@ -90,8 +100,9 @@ if __name__ == '__main__':
     parser.add_argument('--config', dest='config_file_name',
                         help='configuration file to read',
                         default='config.json')
-                        
-    #parser.add_argument('command')
+    
+    parser.add_argument('--get-src', dest='src',action='store_const', const=True,help='Get the React OS source code (for the given revision)') 
+    parser.add_argument('--compile', action='store_const', const=True,help='Compile React OS from the sources')                   
     
     args = parser.parse_args()
 
@@ -109,8 +120,38 @@ if __name__ == '__main__':
     if revision == None:
         revision = get_current_revision()
         
-    src_dir = config['reactos_src_dir']    
-    if os.path.exists(config['reactos_src_dir']+'/trunk'):
-       svn_update_reactos_trunk(revision,src_dir)
-    else:
-       svn_checkout_reactos_trunk(revision,src_dir)
+    src_dir = os.path.abspath(config['reactos_src_dir'])    
+    
+    if args.src:
+        if os.path.exists(config['reactos_src_dir']+'/trunk'):
+            svn_update_reactos_trunk(revision,src_dir)
+        else:
+            svn_checkout_reactos_trunk(revision,src_dir)
+    
+    if args.compile:   
+        in_RosBE=check_if_inside_RosBE()
+        if not(in_RosBE):
+            print('Looks like we are not in the React OS build environment.')
+            sys.exit(1)
+        if not(os.path.exists(src_dir+'/reactos')):
+            print('The source code seems not to be in',src_dir)
+            print('Use the --get-src subcommand to obtain it.')
+            sys.exit(2)
+        build_dir = os.path.abspath(config['reactos_build_dir'])
+        if os.path.exists(build_dir):
+            print('The directory',build_dir,'already exists. Deleting it')
+            subprocess.check_call(['rm','--force','--recursive',build_dir])
+        os.mkdir(build_dir)
+        current_dir=os.getcwd()
+        os.chdir(build_dir)
+        subprocess.check_call(src_dir+'/reactos/configure.sh')
+        os.chrdir('reactos')
+        subprocess.check_call('ninja bootcd')
+        os.chrdir(current_dir)
+        
+            
+        
+            
+            
+            
+        
