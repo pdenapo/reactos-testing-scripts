@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Script to checkout the React OS sources
+# rts: React OS Testing Script
+# Script to checkout the React OS sources and compile them
 # Copyright (C) 2016  Pablo De Nápoli <pdenapo@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
@@ -28,19 +29,29 @@ import sys
 import xml.etree.ElementTree as etree
 
 
-def checkout_reactos_trunk(revision):
+def svn_checkout_reactos_trunk(revision,src_dir):
     """ This function runs the "svn ckeckout" command to get the React OS sources """
 
-    global config
-    dir = config['reactos_src_dir'] + '/r' + revision
-    print('Running svn checkout for revision', revision, 'into', dir)
+    print('Running svn checkout for revision', revision, 'into', src_dir)
     subprocess.call([
         'svn',
         'checkout',
         '--revision',
         revision,
         'svn://svn.reactos.org/reactos/trunk/reactos',
-        dir,
+        src_dir,
+        ])
+
+def svn_update_reactos_trunk(revision,src_dir):
+    """ This function runs the "svn update" to update the React OS sources to a given revision """
+
+    print('Running svn update for revision', revision, 'into', src_dir)
+    subprocess.call([
+        'svn',
+        'upate',
+        '--revision',
+        revision,
+        src_dir,
         ])
 
 
@@ -79,7 +90,9 @@ if __name__ == '__main__':
     parser.add_argument('--config', dest='config_file_name',
                         help='configuration file to read',
                         default='config.json')
-
+                        
+    #parser.add_argument('command')
+    
     args = parser.parse_args()
 
     # We use a configuration file with json format for several configuration parameters.
@@ -95,5 +108,9 @@ if __name__ == '__main__':
 
     if revision == None:
         revision = get_current_revision()
-
-    checkout_reactos_trunk(revision)
+        
+    src_dir = config['reactos_src_dir']    
+    if os.path.exists(config['reactos_src_dir']+'/trunk'):
+       svn_update_reactos_trunk(revision,src_dir)
+    else:
+       svn_checkout_reactos_trunk(revision,src_dir)
