@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# get_reactos_sources : React OS Testing Script
-# Script to checkout the React OS sources
+# get_reactos_sources .py: Script to checkout the React OS sources
 # Copyright (C) 2016  Pablo De Nápoli <pdenapo@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
