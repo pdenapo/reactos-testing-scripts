@@ -16,8 +16,8 @@ else
     echo "reactos_build_dir not defined in $CONFIG_FILE"
     exit 1
 fi
-rm --recursive --force rosbuild
-mkdir rosbuild
+rm --recursive --force $BUILD_DIR
+mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 $SRC_DIR/reactos/configure.sh
 cd $BUILD_DIR/reactos
