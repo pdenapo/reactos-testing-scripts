@@ -100,8 +100,8 @@ if __name__ == '__main__':
                         help='configuration file to read',
                         default='config.json')
 
-    parser.add_argument('--compile', action='store_const', const=True,
-                        help='Compile React OS from the sources')
+    #parser.add_argument('--compile', action='store_const', const=True,
+    #                    help='Compile React OS from the sources')
 
     args = parser.parse_args()
 
