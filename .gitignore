@@ -1,2 +1,4 @@
 *~
 svn_info.xml
+*.old
+*.python
