@@ -70,7 +70,7 @@ def svn_update_reactos_trunk(revision, src_dir):
     """ This function runs the "svn update" to update the React OS sources to a given revision """
 
     print('Running svn update for revision', revision, 'into', src_dir)
-    subprocess.call(['svn', 'upate', '--revision', revision, src_dir])
+    subprocess.call(['svn', 'update', '--revision', revision, src_dir])
 
 
 def check_if_inside_RosBE():
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     src_dir = os.path.abspath(config['reactos_src_dir'])
 
-    if os.path.exists(config['reactos_src_dir'] + '/trunk'):
+    if os.path.exists(config['reactos_src_dir'] + '/reactos'):
         svn_update_reactos_trunk(revision, src_dir)
     else:
         svn_checkout_reactos_trunk(revision, src_dir)
