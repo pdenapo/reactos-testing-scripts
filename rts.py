@@ -109,11 +109,15 @@ if __name__ == '__main__':
     # We use a configuration file with json format for several configuration parameters.
 
     if os.path.isfile(args.config_file_name):
-        config = json.load(open(args.config_file_name))
+        try:
+            config = json.load(open(args.config_file_name))
+        except ValueError:
+            print('Error parsing the configuration file',args.config_file_name)
+            sys.exit(3)
     else:
         print('Configuration file', args.config_file_name,
               ' does not exist.')
-        sys.exit(3)
+        sys.exit(4)
 
     revision = args.revision
 
