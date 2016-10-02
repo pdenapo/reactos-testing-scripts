@@ -1,6 +1,7 @@
 {
     "iso_images_dir": "/home/pablo/reactos-work/iso_images",
     "reactos_src_dir":"/home/pablo/reactos-work/src",
+    "reactos_build_dir":"/home/pablo/reactos-work/rosbuild",
     "memory_size": 6000,
     "disk_size": 5000
 }
