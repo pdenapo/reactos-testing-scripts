@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# rts: React OS Testing Script
+# get_reactos_sources : React OS Testing Script
 # Script to checkout the React OS sources
 # Copyright (C) 2016  Pablo De Nápoli <pdenapo@gmail.com>
 
