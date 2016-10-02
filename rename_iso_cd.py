@@ -41,7 +41,7 @@ if __name__ == '__main__':
                         help='configuration file to read',
                         default='config.json')
 
-    #parser.add_argument('--compile', action='store_const', const=True,
+    # parser.add_argument('--compile', action='store_const', const=True,
     #                    help='Compile React OS from the sources')
 
     args = parser.parse_args()
@@ -59,15 +59,17 @@ if __name__ == '__main__':
         print('Configuration file', args.config_file_name,
               ' does not exist.')
         sys.exit(4)
-        
+
     build_dir = os.path.abspath(config['reactos_build_dir'])
     src_dir = os.path.abspath(config['reactos_src_dir'])
     iso_images_dir = os.path.abspath(config['iso_images_dir'])
-    p = subprocess.Popen(["svnversion",src_dir+"/reactos"], stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+    p = subprocess.Popen(['svnversion', src_dir + '/reactos'],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
     m = re.match(r'(|\d+M?S?):?(\d+)(M?)S?', p.stdout.read())
     rev = int(m.group(2))
-    new_name="bootcd-compiled-"+str(rev)+".iso"
+    new_name = 'bootcd-compiled-' + str(rev) + '.iso'
     print(new_name)
-    os.rename(build_dir+"/reactos/bootcd.iso",iso_images_dir+"/"+new_name)       
+    os.rename(build_dir + '/reactos/bootcd.iso', iso_images_dir + '/'
+              + new_name)
 
