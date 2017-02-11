@@ -171,6 +171,12 @@ def create_virtual_machine(revision, iso_image):
     mutable.memory_size = config['memory_size']
     mutable.attach_device('IDE', 0, 0, device_type, medium)
     mutable.attach_device('IDE', 0, 1, device_type2, medium2)
+    # setting the network adapter type to Am79C970A that works with React OS
+    # The default is I82545EM (Intel PRO/1000 MT Server) that currently 
+    # does not work with React OS
+    network_adpter=mutable.get_network_adapter(0)
+    network_adpter.adapter_type=vbl.NetworkAdapterType.am79_c970_a
+
     mutable.save_settings()
     session.unlock_machine()
     print('The virtual machine is ready!')
