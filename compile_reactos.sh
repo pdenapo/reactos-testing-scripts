@@ -11,7 +11,7 @@ else
 fi
 BUILD_DIR=$(jq --raw-output .reactos_build_dir < $CONFIG_FILE)
 if [[ $BUILD_DIR ]]; then
-    echo "reactos_build_dir= ${SRC_DIR}"
+    echo "reactos_build_dir= ${BUILD_DIR}"
 else
     echo "reactos_build_dir not defined in $CONFIG_FILE"
     exit 1
